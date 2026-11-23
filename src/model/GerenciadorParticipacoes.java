@@ -5,6 +5,8 @@ import java.util.List;
 
 /**
  * Gerencia as participações dos usuários nos eventos.
+ * O participante deve ser identificado por um ID único,
+ * fornecido pelo sistema de usuários.
  */
 public class GerenciadorParticipacoes {
 
@@ -16,9 +18,11 @@ public class GerenciadorParticipacoes {
 
     /**
      * Inscreve um participante em um evento.
+     * @param participante ID único do participante.
      */
     public boolean participar(String participante, Evento evento) {
-        if (participante == null || participante.isBlank() || evento == null) {
+        if (participante == null || participante.trim().isEmpty()
+                || evento == null) {
             return false;
         }
 
@@ -31,7 +35,7 @@ public class GerenciadorParticipacoes {
     }
 
     /**
-     * Cancela a participação em um evento.
+     * Cancela a participação de um participante em um evento.
      */
     public boolean cancelarParticipacao(String participante, Evento evento) {
         if (participante == null || evento == null) {
@@ -39,23 +43,24 @@ public class GerenciadorParticipacoes {
         }
 
         return participacoes.removeIf(p ->
-                p.getParticipante().equalsIgnoreCase(participante.trim())
+                p.getParticipante().equals(participante.trim())
                 && p.getEvento() == evento
         );
     }
 
     /**
      * Retorna os eventos de um participante.
+     * @param participante ID único do participante.
      */
     public List<Evento> listarMeusEventos(String participante) {
         List<Evento> meusEventos = new ArrayList<>();
 
-        if (participante == null || participante.isBlank()) {
+        if (participante == null || participante.trim().isEmpty()) {
             return meusEventos;
         }
 
         for (Participacao p : participacoes) {
-            if (p.getParticipante().equalsIgnoreCase(participante.trim())) {
+            if (p.getParticipante().equals(participante.trim())) {
                 meusEventos.add(p.getEvento());
             }
         }
@@ -65,7 +70,7 @@ public class GerenciadorParticipacoes {
 
     private boolean jaParticipa(String participante, Evento evento) {
         for (Participacao p : participacoes) {
-            if (p.getParticipante().equalsIgnoreCase(participante.trim())
+            if (p.getParticipante().equals(participante.trim())
                     && p.getEvento() == evento) {
                 return true;
             }
