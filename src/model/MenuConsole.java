@@ -1,5 +1,9 @@
+package model;
+
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Exibe o menu principal e recebe as opções digitadas pelo usuário.
@@ -31,7 +35,7 @@ public class MenuConsole {
                     informarIntegracao("Cadastrar usuário");
                     break;
                 case 3:
-                    informarIntegracao("Cadastrar evento");
+                    cadastrarEvento();
                     break;
                 case 4:
                     informarIntegracao("Participar de evento");
@@ -87,7 +91,7 @@ public class MenuConsole {
 
         System.out.println("========== EVENTOS CADASTRADOS ==========");
         for (int i = 0; i < eventos.size(); i++) {
-            System.out.println((i + 1) + " - " + eventos.get(i));
+            System.out.println((i + 1) + " - " + eventos.get(i).exibirDetalhes());
         }
     }
 
@@ -96,4 +100,109 @@ public class MenuConsole {
                 + ": esta opção precisa ser conectada à classe responsável "
                 + "por essa funcionalidade.");
     }
+ 
+private void cadastrarEvento() {
+    System.out.println("\n========== CADASTRO DE EVENTO ==========");
+
+    String nome = lerTextoObrigatorio("Nome do evento: ");
+    String endereco = lerTextoObrigatorio("Endereço ou local de origem: ");
+
+    Categoria categoria;
+    while (true) {
+        System.out.println("Categorias: Música, Esporte, Cultura, Gastronomia, Tecnologia, Educação");
+        System.out.print("Categoria: ");
+        try {
+            categoria = Categoria.deTexto(scanner.nextLine());
+            break;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Categoria inválida. Tente novamente.");
+        }
+    }
+
+    LocalDateTime inicio;
+    while (true) {
+        System.out.print("Data e horário (dd/MM/yyyy HH:mm): ");
+        String data = scanner.nextLine().trim();
+
+        try {
+            inicio = LocalDateTime.parse(data, Evento.FORMATO_DATA);
+
+            if (!inicio.format(Evento.FORMATO_DATA).equals(data)) {
+                throw new IllegalArgumentException();
+            }
+            break;
+        } catch (DateTimeParseException | IllegalArgumentException e) {
+            System.out.println("Data inválida! Exemplo: 30/11/2026 14:30");
+        }
+    }
+
+    int duracaoMin;
+    while (true) {
+        System.out.print("Duração em minutos: ");
+        try {
+            duracaoMin = Integer.parseInt(scanner.nextLine().trim());
+            if (duracaoMin > 0) {
+                break;
+            }
+            System.out.println("A duração deve ser maior que zero.");
+        } catch (NumberFormatException e) {
+            System.out.println("Digite um número válido.");
+        }
+    }
+
+    String descricao = lerTextoObrigatorio("Descrição: ");
+
+    Evento evento;
+
+    while (true) {
+        System.out.println("Tipo de evento:");
+        System.out.println("1 - Presencial");
+        System.out.println("2 - Online");
+        System.out.print("Escolha: ");
+
+        String tipo = scanner.nextLine().trim();
+
+        if (tipo.equals("1")) {
+            System.out.print("Ponto de referência (opcional): ");
+            String ponto = scanner.nextLine();
+
+            evento = new EventoPresencial(
+                    nome, endereco, categoria, inicio,
+                    duracaoMin, descricao, ponto
+            );
+            break;
+
+        } else if (tipo.equals("2")) {
+            String link = lerTextoObrigatorio("Link de acesso: ");
+
+            evento = new EventoOnline(
+                    nome, endereco, categoria, inicio,
+                    duracaoMin, descricao, link
+            );
+            break;
+
+        } else {
+            System.out.println("Opção inválida. Escolha 1 ou 2.");
+        }
+    }
+
+    eventos.add(evento);
+    PersistenciaEventos.salvar(eventos);
+
+    System.out.println("\nEvento cadastrado e salvo com sucesso!");
+}
+
+private String lerTextoObrigatorio(String mensagem) {
+    while (true) {
+        System.out.print(mensagem);
+        String texto = scanner.nextLine().trim();
+
+        if (!texto.isEmpty()) {
+            return texto;
+        }
+
+        System.out.println("Este campo é obrigatório. Tente novamente.");
+    }
+}
+   
 }

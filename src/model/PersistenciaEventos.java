@@ -1,3 +1,5 @@
+package model;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +13,9 @@ import java.util.List;
  */
 public class PersistenciaEventos {
     private static final String ARQUIVO = "events.data";
+static {
+    System.out.println("Arquivo salvo em: " + new java.io.File(ARQUIVO).getAbsolutePath());
+}
 
     public static void salvar(List<Evento> eventos) {
         try (ObjectOutputStream saida =

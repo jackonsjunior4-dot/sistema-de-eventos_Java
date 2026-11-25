@@ -14,7 +14,7 @@ import java.time.format.DateTimeParseException;
  * Formato da linha no events.data (campos separados por ponto e vírgula):
  * tipo;nome;endereco;categoria;dd/MM/yyyy HH:mm;duracaoMin;descricao;extra
  */
-public abstract class Evento {
+public abstract class Evento implements java.io.Serializable {
 
     /** Formato de data e hora usado no console e no events.data. */
     public static final DateTimeFormatter FORMATO_DATA =
