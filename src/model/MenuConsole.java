@@ -14,10 +14,12 @@ import java.time.format.DateTimeParseException;
 public class MenuConsole {
     private final Scanner scanner;
     private final List<Evento> eventos;
+    private final CadastroUsuario cadastroUsuario;
 
     public MenuConsole(List<Evento> eventos) {
         this.eventos = eventos;
         this.scanner = new Scanner(System.in);
+        this.cadastroUsuario = new CadastroUsuario(scanner);
     }
 
     public void executar() {
